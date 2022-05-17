@@ -1,5 +1,7 @@
 const { response, request } = require('express');
 
+const Usuario = require('../models/usuario');
+
 const usuariosGet = ('/', (req = request, res = response) => {
     const {q, name = 'No name', apikey} = req.query;
 
@@ -10,13 +12,13 @@ const usuariosGet = ('/', (req = request, res = response) => {
         apikey
     });
 })
-const usuariosPost = ('/', (req = request, res = response) => {
-    const {nombre, edad} = req.body;
+const usuariosPost = ('/', async (req = request, res = response) => {
+    const body = req.body;
+    const usuario = new Usuario( body );
 
+    await usuario.save();
     res.json({
-        msg: "post api - Controller",
-        nombre,
-        edad
+        usuario
     });
 })
 const usuariosPut = ('/', (req = request, res = response) => {
