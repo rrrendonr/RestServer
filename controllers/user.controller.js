@@ -3,7 +3,7 @@ const bcryptjs = require('bcryptjs');
 
 const Usuario = require('../models/usuario');
 
-const usuariosGet = ('/', (req = request, res = response) => {
+const usuariosGet = (req = request, res = response) => {
     const {q, name = 'No name', apikey} = req.query;
 
     res.json({
@@ -12,19 +12,12 @@ const usuariosGet = ('/', (req = request, res = response) => {
         name,
         apikey
     });
-})
-const usuariosPost = ('/', async (req = request, res = response) => {
+}
+const usuariosPost = async (req = request, res = response) => {
 
     const {nombre, correo, password, rol} = req.body;
     const usuario = new Usuario( {nombre, correo, password, rol} );
 
-    //Verificar correo
-    const existeEmail = await Usuario.findOne({ correo});
-    if (existeEmail) {
-        return res.status(400).json({
-            msg: 'Ya existe una cuenta con ese correo electrónico'
-        })
-    }
     // encriptar pass
     const salt = bcryptjs.genSaltSync();
     usuario.password = bcryptjs.hashSync(password, salt);
@@ -34,26 +27,35 @@ const usuariosPost = ('/', async (req = request, res = response) => {
     res.json({
         usuario
     });
-})
-const usuariosPut = ('/', (req = request, res = response) => {
+}
+const usuariosPut = async(req = request, res = response) => {
 
-    const id = req.params.id;
+    const {id} = req.params;
+    const {_id, password, google, correo, ...resto} = req.body
 
+    //validar contra base de datos
+    if (password) {
+        // encriptar pass
+        const salt = bcryptjs.genSaltSync();
+        resto.password = bcryptjs.hashSync(password, salt);
+    }
+
+    const usuario = await Usuario.findByIdAndUpdate(id, resto);
     res.json({
         msg: "put api - Controller",
-        id
+        usuario
     });
-})
-const usuariosPatch = ('/', (req = request, res = response) => {
+}
+const usuariosPatch = (req = request, res = response) => {
     res.json({
         msg: "patch api - Controller"
     });
-})
-const usuariosDelete = ('/', (req = request, res = response) => {
+}
+const usuariosDelete = (req = request, res = response) => {
     res.json({
         msg: "delete api - Controller"
     });
-})
+}
 
 module.exports = {
     usuariosGet,
