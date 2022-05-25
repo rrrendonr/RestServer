@@ -23,7 +23,7 @@ router.post('/', [
                 if (!existeRol) {
                         throw new Error(`El rol ${rol} no está en la DB`)
                 }
-        })
+        }),
         validatorField
 ], usuariosPost)
 
