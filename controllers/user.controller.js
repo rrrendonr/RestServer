@@ -3,14 +3,18 @@ const bcryptjs = require('bcryptjs');
 
 const Usuario = require('../models/usuario');
 
-const usuariosGet = (req = request, res = response) => {
-    const {q, name = 'No name', apikey} = req.query;
+const usuariosGet = async(req = request, res = response) => {
+    const {limite = 5, desde = 0} = req.query;
+    const query = {status: true}
+    const usuarios = await Usuario.find(query)
+        .skip(desde)
+        .limit(limite);
+
+    const total = await Usuario.countDocuments(query);
 
     res.json({
-        msg: "get api - Controller",
-        q,
-        name,
-        apikey
+        total,
+        usuarios
     });
 }
 const usuariosPost = async (req = request, res = response) => {
@@ -41,10 +45,7 @@ const usuariosPut = async(req = request, res = response) => {
     }
 
     const usuario = await Usuario.findByIdAndUpdate(id, resto);
-    res.json({
-        msg: "put api - Controller",
-        usuario
-    });
+    res.json(usuario);
 }
 const usuariosPatch = (req = request, res = response) => {
     res.json({
