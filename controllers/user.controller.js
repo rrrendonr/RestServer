@@ -2,7 +2,6 @@ const { response, request } = require('express');
 const bcryptjs = require('bcryptjs');
 
 const Usuario = require('../models/usuario');
-const usuario = require('../models/usuario');
 
 const usuariosGet = async(req = request, res = response) => {
     const {limite = 5, desde = 0} = req.query;
@@ -58,9 +57,6 @@ const usuariosPatch = (req = request, res = response) => {
 const usuariosDelete = async(req = request, res = response) => {
 
     const {id} = req.params;
-
-    //borrado disicamente
-    // const usuario = await Usuario.findByIdAndDelete(id);
 
     const usuario = await Usuario.findByIdAndUpdate(id, {status: false});
 
