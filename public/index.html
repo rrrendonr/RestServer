@@ -24,6 +24,10 @@
         data-logo_alignment="left">
     </div>
 
+    <button id="google_singout">
+        Singout
+    </button>
+
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
         function handleCredentialResponse(response) {
@@ -42,8 +46,20 @@
                 .then(res => res.json())
                 .then(res => {
                     console.log(res);
+                    localStorage.setItem('email', res.usuario.correo)
                 })
                 .catch(console.warn)
+        }
+
+        const button = document.getElementById('google_singout');
+
+        button.onclick = () => {
+            google.accounts.id.disableAutoSelect()
+
+            google.accounts.id.revoke(localStorage.getItem('email'), done => {
+                localStorage.clear();
+                location.reload();
+            });
         }
     </script>
 </body>
