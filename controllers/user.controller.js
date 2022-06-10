@@ -49,11 +49,6 @@ const usuariosPut = async(req = request, res = response) => {
     const usuario = await Usuario.findByIdAndUpdate(id, resto);
     res.json(usuario);
 }
-const usuariosPatch = (req = request, res = response) => {
-    res.json({
-        msg: "patch api - Controller"
-    });
-}
 const usuariosDelete = async(req = request, res = response) => {
 
     const {id} = req.params;
@@ -69,6 +64,5 @@ module.exports = {
     usuariosGet,
     usuariosPost,
     usuariosPut,
-    usuariosPatch,
     usuariosDelete
 }

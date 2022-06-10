@@ -38,8 +38,6 @@ router.put('/:id', [
         validatorField
 ],usuariosPut)
 
-router.patch('/', usuariosPatch)
-
 router.delete('/:id',[
         validarJWT,
         // esAdminRole,
