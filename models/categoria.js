@@ -1,4 +1,5 @@
 const { Schema, model} = require('mongoose');
+const Usuario = require('./usuario');
 
 const categoriaSchema = Schema({
     nombre: {
@@ -13,14 +14,13 @@ const categoriaSchema = Schema({
     },
     usuario: {
         type: Schema.Types.ObjectId,
-        ref: 'Usuario',
+        ref: Usuario,
         require: true
     }
 })
 
 categoriaSchema.methods.toJSON = function() {
     const {__v, ...categoria} = this.toObject();
-
     return categoria
 }
 

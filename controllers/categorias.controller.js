@@ -12,7 +12,9 @@ const obtenerCAtegorias = async(req = request, res = response) => {
         Categoria.find(query)
             .skip(desde)
             .limit(limite)
+            .populate('usuario'),
     ])
+
 
     res.json({
         total,
