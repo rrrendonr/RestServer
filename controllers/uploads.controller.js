@@ -1,41 +1,55 @@
 const { response, request } = require("express");
-const { v4: uuidv4 } = require('uuid');
+const { subirArchivo } = require("../helpers/subir-archivo");
+const { Usuario, Producto } = require("../models");
 
-const path = require('path');
-
-
-const cargarArchivos = (req = request, res = response) => {
+const cargarArchivos = async(req = request, res = response) => {
 
     if (!req.files || Object.keys(req.files).length === 0 || !req.files.archivo) {
         res.status(400).json({msg: 'No hay archivos en la petición.'});
         return;
     }
+    try {
+        const nombre = await subirArchivo(req.files, undefined, 'imgs');
+        res.json({ nombre });
 
-    const {archivo} = req.files;
-    const nombreCortado = archivo.name.split('.')
-    const extension = nombreCortado[nombreCortado.length -1]
+    } catch (err) {
+        res.status(400).json({err})
+    }
+}
 
-   //validar Extensiones
-    const extendionesValidas = ['jpg', 'png', 'jpeg', 'gif']
+const actualizarImagen = async(req = request, res = response) => {
+    const {id, coleccion} = req.params;
 
-    if (!extendionesValidas.includes(extension)) {
-        return res.status(400).json({
-            msg: 'La extensión no es válida'
-        })
+    let modelo;
+
+    switch (coleccion) {
+        case 'usuarios':
+            modelo = await Usuario.findById(id);
+            if (!modelo) {
+                return res.status(400).json({msg: 'No existe usuario con el id'})
+            }
+        break;
+
+        case 'productos':
+            modelo = await Producto.findById(id);
+            if (!modelo) {
+                return res.status(400).json({msg: 'No existe producto con el id'})
+            }
+        break;
+    
+        default:
+            return res.status(500).json({msg: 'no se valido'})
     }
 
-    const nombreArchivoFinal = uuidv4() + '.' + extension;
-    const uploadPath = path.join(__dirname, '../uploads/', nombreArchivoFinal);
+    const nombre = await subirArchivo(req.files, undefined, coleccion);
+    modelo.img = nombre;
 
-    archivo.mv(uploadPath, (err) => {
-        if (err) {
-            return res.status(500).json({err});
-        }
+    await modelo.save();
 
-        res.json({msg: 'Archivo subido con éxito ' + uploadPath});
-    });
+    res.json(modelo)
 }
 
 module.exports = {
+    actualizarImagen,
     cargarArchivos,
 }
